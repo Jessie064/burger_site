@@ -148,12 +148,13 @@ def profile_view(request):
 # Admin view
 # ---------------------------------------------------------------------------
 
-# VULN: Exposed Admin Page — no @login_required or @user_passes_test.
-# Any unauthenticated visitor can access /admin-panel/ directly.
+@login_required
+@user_passes_test(_is_staff)
 def admin_panel_view(request):
     """
-    INTENTIONALLY VULNERABLE: No authentication check.
-    Any user (logged in or not) can view all users and feedback.
+    Staff-only dashboard. Requires the user to be logged in AND have
+    is_staff=True. Unauthenticated or non-staff users are redirected
+    to the login page.
     """
     users = User.objects.select_related('profile').all()
     feedbacks = Feedback.objects.select_related('user').all()
