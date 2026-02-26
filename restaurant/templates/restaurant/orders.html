@@ -21,16 +21,7 @@
                         {{ order.created_at|date:"M d, Y · g:i A" }}
                     </span>
                 </div>
-                <span style="
-                        padding:.25rem .8rem;border-radius:999px;font-size:.8rem;font-weight:700;
-                        {% if order.status == 'pending' %}
-                            background:rgba(255,193,7,.15);color:#ffc107;
-                        {% elif order.status == 'confirmed' %}
-                            background:rgba(13,202,240,.15);color:#0dcaf0;
-                        {% else %}
-                            background:rgba(25,135,84,.15);color:#20c997;
-                        {% endif %}
-                    ">
+                <span class="status-badge status-badge--{{ order.status }}">
                     {% if order.status == 'pending' %}⏳{% elif order.status == 'confirmed' %}✅{% else %}🍔{% endif %}
                     {{ order.get_status_display }}
                 </span>

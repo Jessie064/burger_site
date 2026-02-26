@@ -255,6 +255,34 @@ a:hover {
   box-shadow: var(--shadow);
 }
 
+/* ─── Perk cards (Why BurgerCraft section) ───────────────────── */
+.perk-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 2rem;
+  box-shadow: var(--shadow);
+  transition: transform var(--transition), box-shadow var(--transition), border-color var(--transition);
+  cursor: default;
+}
+
+.perk-card:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 12px 40px rgba(232, 160, 32, 0.18);
+  border-color: var(--accent);
+}
+
+.perk-card .perk-icon {
+  font-size: 2.5rem;
+  margin-bottom: 0.75rem;
+  display: inline-block;
+  transition: transform 0.3s ease;
+}
+
+.perk-card:hover .perk-icon {
+  transform: scale(1.25) rotate(-5deg);
+}
+
 /* ─── Hero ───────────────────────────────────────────────────── */
 .hero {
   position: relative;
@@ -625,6 +653,29 @@ a:hover {
   background: rgba(232, 160, 32, 0.15);
   color: var(--accent);
   border: 1px solid rgba(232, 160, 32, 0.3);
+}
+
+/* ─── Order status badge ──────────────────────────────────────── */
+.status-badge {
+  padding: 0.25rem 0.8rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.status-badge--pending {
+  background: rgba(255, 193, 7, 0.15);
+  color: #ffc107;
+}
+
+.status-badge--confirmed {
+  background: rgba(13, 202, 240, 0.15);
+  color: #0dcaf0;
+}
+
+.status-badge--done {
+  background: rgba(25, 135, 84, 0.15);
+  color: #20c997;
 }
 
 /* ─── Profile ────────────────────────────────────────────────── */
