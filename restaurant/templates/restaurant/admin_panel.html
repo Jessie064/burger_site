@@ -1,0 +1,146 @@
+{% extends 'restaurant/base.html' %}
+{% block title %}Admin Panel{% endblock %}
+{% block meta_desc %}BurgerCraft staff dashboard.{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="section-title">🛡️ Admin <span class="highlight">Panel</span></h1>
+        <p class="section-subtitle text-muted">Staff-only dashboard. Access is restricted to authenticated staff
+            members.</p>
+
+        <!-- Users table -->
+        <div class="card mb-2" style="margin-bottom:2rem;">
+            <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:1rem;">👥 Registered Users</h2>
+            <div style="overflow-x:auto;">
+                <table class="admin-table" id="users-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Full Name</th>
+                            <th>Joined</th>
+                            <th>Role</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for u in users %}
+                        <tr>
+                            <td>{{ u.pk }}</td>
+                            <td>{{ u.username }}</td>
+                            <td>{{ u.email }}</td>
+                            <td>{{ u.get_full_name }}</td>
+                            <td>{{ u.date_joined|date:"N j, Y" }}</td>
+                            <td>{% if u.is_staff %}<span class="staff-badge">Staff</span>{% else %}User{% endif %}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-muted">No users found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Feedback table -->
+        <div class="card">
+            <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:1rem;">💬 Customer Feedback</h2>
+            <div style="overflow-x:auto;">
+                <table class="admin-table" id="feedback-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Rating</th>
+                            <th>Message</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fb in feedbacks %}
+                        <tr>
+                            <td>{{ fb.pk }}</td>
+                            <td>{{ fb.name }}</td>
+                            <td>{{ fb.rating }}/5</td>
+                            <!-- Auto-escaped: safe to display even if message contains HTML -->
+                            <td>{{ fb.message }}</td>
+                            <td>{{ fb.created_at|date:"N j, Y" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-muted">No feedback yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Orders table -->
+        <div class="card" style="margin-top:2rem;">
+            <h2 style="font-size:1.2rem;font-weight:700;margin-bottom:1rem;">🍔 Customer Orders</h2>
+            <div style="overflow-x:auto;">
+                <table class="admin-table" id="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Order #</th>
+                            <th>Customer</th>
+                            <th>Items</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td>#{{ order.pk }}</td>
+                            <td>{{ order.user.username }}</td>
+                            <td>
+                                {% for item in order.items.all %}
+                                {{ item.quantity }}× {{ item.burger.name }}{% if not forloop.last %}, {% endif %}
+                                {% endfor %}
+                            </td>
+                            <td style="color:var(--accent);font-weight:700;">₱{{ order.total }}</td>
+                            <td>
+                                <span
+                                    style="font-size:0.8rem;font-weight:600;padding:0.2rem 0.6rem;border-radius:20px;
+                                    background:rgba(232,160,32,0.15);color:var(--accent);border:1px solid rgba(232,160,32,0.3);">
+                                    {{ order.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ order.created_at|date:"N j, Y H:i" }}</td>
+                            <td>
+                                <form method="post" action="{% url 'update_order_status' order.pk %}"
+                                    style="display:flex;gap:.4rem;align-items:center;flex-wrap:wrap;">
+                                    {% csrf_token %}
+                                    <select name="status" style="
+                                        background:#1e1e2e;color:#fff;border:1px solid rgba(255,255,255,.15);
+                                        border-radius:6px;padding:.25rem .5rem;font-size:.8rem;cursor:pointer;">
+                                        <option value="pending" {% if order.status == 'pending' %}selected{% endif %}>⏳
+                                            Pending</option>
+                                        <option value="confirmed" {% if order.status == 'confirmed' %}selected{% endif %}>
+                                            ✅ Confirmed</option>
+                                        <option value="done" {% if order.status == 'done' %}selected{% endif %}>🍔 Done
+                                        </option>
+                                    </select>
+                                    <button type="submit" class="btn btn-primary"
+                                        style="padding:.25rem .7rem;font-size:.78rem;">Save</button>
+                                </form>
+                            </td>
+                        </tr>
+                            {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-muted">No orders placed yet.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+{% endblock %}

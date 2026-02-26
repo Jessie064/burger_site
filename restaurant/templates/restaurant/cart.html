@@ -1,0 +1,91 @@
+{% extends 'restaurant/base.html' %}
+{% block title %}Your Cart{% endblock %}
+{% block meta_desc %}Review your cart and place your burger order.{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="section-title">Your <span class="highlight">Cart</span></h1>
+        <p class="section-subtitle">Review your order before placing it.</p>
+
+        {% if messages %}
+        <ul class="messages">
+            {% for msg in messages %}
+            <li class="{{ msg.tags }}">{{ msg }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+
+        {% if items %}
+        <div class="card" style="padding:0;overflow:hidden;margin-bottom:2rem;">
+            <table class="admin-table" style="margin-top:0;">
+                <thead>
+                    <tr>
+                        <th>Burger</th>
+                        <th>Price</th>
+                        <th>Qty</th>
+                        <th>Subtotal</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in items %}
+                    <tr>
+                        <td style="font-weight:600;">{{ item.burger.name }}</td>
+                        <td>₱{{ item.burger.price }}</td>
+                        <td>
+                            <div class="qty-stepper">
+                                <form method="post" action="{% url 'update_cart' item.burger.pk %}" style="margin:0;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="qty" value="{{ item.qty|add:'-1' }}">
+                                    <button type="submit" class="qty-btn">−</button>
+                                </form>
+                                <span class="qty-num">{{ item.qty }}</span>
+                                <form method="post" action="{% url 'update_cart' item.burger.pk %}" style="margin:0;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="qty" value="{{ item.qty|add:'1' }}">
+                                    <button type="submit" class="qty-btn">+</button>
+                                </form>
+                            </div>
+                        </td>
+                        <td style="color:var(--accent);font-weight:700;">₱{{ item.subtotal }}</td>
+                        <td>
+                            <form method="post" action="{% url 'remove_from_cart' item.burger.pk %}" style="margin:0;">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-danger"
+                                    style="padding:0.3rem 0.8rem;font-size:0.8rem;">Remove</button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td colspan="3" style="font-weight:700;text-align:right;padding-right:1rem;">Total</td>
+                        <td style="font-size:1.25rem;font-weight:800;color:var(--accent);">₱{{ grand_total }}</td>
+                        <td></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div style="display:flex;gap:1rem;flex-wrap:wrap;align-items:center;">
+            <form method="post" action="{% url 'checkout' %}">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-primary" style="font-size:1.05rem;padding:0.8rem 2rem;">
+                    🍔 Place Order
+                </button>
+            </form>
+            <a href="{% url 'menu' %}" class="btn btn-outline">Continue Shopping</a>
+        </div>
+
+        {% else %}
+        <div class="card text-center" style="padding:4rem;">
+            <p style="font-size:3rem;">🛒</p>
+            <p class="text-muted mt-2" style="font-size:1.1rem;">Your cart is empty.</p>
+            <a href="{% url 'menu' %}" class="btn btn-primary mt-3">Browse the Menu</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

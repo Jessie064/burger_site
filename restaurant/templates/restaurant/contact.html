@@ -1,0 +1,61 @@
+{% extends 'restaurant/base.html' %}
+{% block title %}Contact & Feedback{% endblock %}
+{% block meta_desc %}Share your feedback or get in touch with PASSVAFD Craft.{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container" style="max-width:680px;">
+        <h1 class="section-title">Contact <span class="highlight">Us</span></h1>
+        <p class="section-subtitle">We love hearing from you. Leave us a rating and a message!</p>
+
+        <div class="card">
+            <form method="post" action="{% url 'contact' %}" id="feedback-form" novalidate>
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="id_name">Your Name</label>
+                    {{ form.name }}
+                    {% if form.name.errors %}<div class="form-errors">{{ form.name.errors }}</div>{% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_message">Message</label>
+                    {{ form.message }}
+                    {% if form.message.errors %}<div class="form-errors">{{ form.message.errors }}</div>{% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_rating">Rating (1–5)</label>
+                    {{ form.rating }}
+                    {% if form.rating.errors %}<div class="form-errors">{{ form.rating.errors }}</div>{% endif %}
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-full" id="feedback-submit">Send Feedback</button>
+            </form>
+        </div>
+
+        <!-- ── Feedback list ────────────────────────────────── -->
+        {% if feedbacks %}
+        <h2 class="section-title mt-3" style="font-size:1.4rem;">What Others <span class="highlight">Say</span></h2>
+        <div class="feedback-list">
+            {% for fb in feedbacks %}
+            <div class="feedback-item" id="feedback-{{ fb.pk }}">
+                <div class="feedback-header">
+                    <span class="feedback-name">{{ fb.name }}</span>
+                    <span class="feedback-stars" aria-label="{{ fb.rating }} out of 5 stars">
+                        {% for i in "12345" %}
+                        {% if forloop.counter <= fb.rating %}⭐{% endif %} {% endfor %} </span>
+                </div>
+                <!--
+              SECURE: Django auto-escapes {{ fb.message }} by default.
+              Do NOT add | safe here — it would enable stored XSS.
+            -->
+                <p class="feedback-msg">{{ fb.message }}</p>
+                <small class="text-muted">{{ fb.created_at|date:"N j, Y" }}</small>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

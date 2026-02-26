@@ -1,0 +1,83 @@
+{% extends 'restaurant/base.html' %}
+{% block title %}My Orders{% endblock %}
+{% block meta_desc %}View all your past orders at PASSVAFD Craft.{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container">
+        <h1 class="section-title">My <span class="highlight">Orders</span></h1>
+        <p class="section-subtitle">All your past and current orders in one place.</p>
+
+        {% if orders %}
+        {% for order in orders %}
+        <div class="card" style="margin-bottom:1.5rem;padding:0;overflow:hidden;">
+
+            <!-- Order Header -->
+            <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;
+                            padding:1rem 1.5rem;border-bottom:1px solid rgba(255,255,255,.08);gap:.5rem;">
+                <div>
+                    <span style="font-weight:700;font-size:1.05rem;">Order #{{ order.pk }}</span>
+                    <span style="color:var(--text-muted);font-size:.85rem;margin-left:1rem;">
+                        {{ order.created_at|date:"M d, Y · g:i A" }}
+                    </span>
+                </div>
+                <span style="
+                        padding:.25rem .8rem;border-radius:999px;font-size:.8rem;font-weight:700;
+                        {% if order.status == 'pending' %}
+                            background:rgba(255,193,7,.15);color:#ffc107;
+                        {% elif order.status == 'confirmed' %}
+                            background:rgba(13,202,240,.15);color:#0dcaf0;
+                        {% else %}
+                            background:rgba(25,135,84,.15);color:#20c997;
+                        {% endif %}
+                    ">
+                    {% if order.status == 'pending' %}⏳{% elif order.status == 'confirmed' %}✅{% else %}🍔{% endif %}
+                    {{ order.get_status_display }}
+                </span>
+            </div>
+
+            <!-- Order Items -->
+            <div style="padding:1rem 1.5rem;">
+                <table class="admin-table" style="margin:0;">
+                    <thead>
+                        <tr>
+                            <th>Item</th>
+                            <th>Unit Price</th>
+                            <th>Qty</th>
+                            <th>Subtotal</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in order.items.all %}
+                        <tr>
+                            <td style="font-weight:600;">{{ item.burger.name }}</td>
+                            <td>₱{{ item.burger.price }}</td>
+                            <td>{{ item.quantity }}</td>
+                            <td style="color:var(--accent);font-weight:700;">₱{{ item.subtotal }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="3" style="font-weight:700;text-align:right;padding-right:1rem;">Total</td>
+                            <td style="font-size:1.15rem;font-weight:800;color:var(--accent);">₱{{ order.total }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+        </div>
+        {% endfor %}
+
+        <a href="{% url 'menu' %}" class="btn btn-primary" style="margin-top:.5rem;">Order Again 🍔</a>
+
+        {% else %}
+        <div class="card text-center" style="padding:4rem;">
+            <p style="font-size:3rem;">📋</p>
+            <p class="text-muted mt-2" style="font-size:1.1rem;">You haven't placed any orders yet.</p>
+            <a href="{% url 'menu' %}" class="btn btn-primary mt-3">Browse the Menu</a>
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends 'restaurant/base.html' %}
+{% block title %}Home{% endblock %}
+{% block meta_desc %}PASSVAFD Craft – Handcrafted gourmet burgers. Fresh. Bold. Legendary.{% endblock %}
+
+{% block content %}
+
+<!-- ── Hero ──────────────────────────────────────────────── -->
+<section class="hero">
+    <div class="container">
+        <div class="hero-content">
+            <span class="hero-eyebrow">🔥 Fresh &amp; Handcrafted</span>
+            <h1>Burgers That <span class="highlight">Hit Different</span></h1>
+            <p>Flame-grilled patties, premium toppings, and sauces that'll make you forget everything else.</p>
+            <div class="hero-actions">
+                <a href="{% url 'menu' %}" class="btn btn-primary">Explore Menu</a>
+                <a href="{% url 'contact' %}" class="btn btn-outline">Leave Feedback</a>
+            </div>
+        </div>
+    </div>
+    <div class="hero-badge" aria-hidden="true">🍔</div>
+</section>
+
+<!-- ── Featured Burgers ──────────────────────────────────── -->
+<section class="section">
+    <div class="container">
+        <h2 class="section-title">Our <span class="highlight">Signature</span> Picks</h2>
+        <p class="section-subtitle">The crowd favourites — tried, tested, and absolutely legendary.</p>
+
+        {% if featured %}
+        <div class="burger-grid">
+            {% for burger in featured %}
+            <article class="burger-card">
+                <div class="burger-card-img" aria-label="{{ burger.name }} image">
+                    {% if burger.image_url %}
+                    <img src="{{ burger.image_url }}" alt="{{ burger.name }}"
+                        style="width:100%;height:100%;object-fit:cover;" />
+                    {% else %}
+                    🍔
+                    {% endif %}
+                </div>
+                <div class="burger-card-body">
+                    <h3 class="burger-card-name">{{ burger.name }}</h3>
+                    <p class="burger-card-desc">{{ burger.description }}</p>
+                    <div class="burger-card-footer">
+                        <span class="burger-price">₱{{ burger.price }}</span>
+                        <span class="badge-available">Available</span>
+                    </div>
+                </div>
+            </article>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-3">
+            <a href="{% url 'menu' %}" class="btn btn-primary">View Full Menu</a>
+        </div>
+        {% else %}
+        <p class="text-muted text-center">No burgers on the menu yet. Check back soon!</p>
+        {% endif %}
+    </div>
+</section>
+
+<!-- ── Why BurgerCraft ───────────────────────────────────── -->
+<section class="section"
+    style="background: var(--surface); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+    <div class="container">
+        <h2 class="section-title text-center">Why <span class="highlight">PASSVAFD Craft?</span></h2>
+        <p class="section-subtitle text-center">Because average is not on our menu.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1.5rem;margin-top:1rem;">
+            {% for icon, title, desc in perks %}
+            <div class="card text-center">
+                <div style="font-size:2.5rem;margin-bottom:0.75rem;">{{ icon }}</div>
+                <h3 style="font-weight:700;margin-bottom:0.4rem;">{{ title }}</h3>
+                <p class="text-muted" style="font-size:.9rem;">{{ desc }}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+{% endblock %}
