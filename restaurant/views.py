@@ -258,6 +258,27 @@ def orders_view(request):
 
 
 @login_required
+def delete_order(request, pk):
+    """Allow a user to delete their own order (no IDOR — scoped to request.user)."""
+    if request.method == 'POST':
+        order = get_object_or_404(Order, pk=pk, user=request.user)
+        order.delete()
+        messages.success(request, f'Order #{pk} has been deleted.')
+    return redirect('orders')
+
+
+@login_required
+@user_passes_test(_is_staff)
+def admin_delete_order(request, pk):
+    """Allow staff to delete any order."""
+    if request.method == 'POST':
+        order = get_object_or_404(Order, pk=pk)
+        order.delete()
+        messages.success(request, f'Order #{pk} has been deleted.')
+    return redirect('admin_panel')
+
+
+@login_required
 def checkout_view(request):
     """Convert session cart into an Order record, then clear the cart."""
     if request.method == 'POST':
