@@ -1,0 +1,59 @@
+{% extends 'restaurant/base.html' %}
+{% block title %}{{ title }}{% endblock %}
+{% block meta_desc %}Burger management - Admin{% endblock %}
+
+{% block content %}
+<section class="section">
+    <div class="container" style="max-width:620px;">
+        <h1 class="section-title">{{ title }}</h1>
+        <p class="section-subtitle text-muted">
+            {% if burger %}Edit burger details below.{% else %}Add a new burger to the menu.{% endif %}
+        </p>
+
+        <div class="card">
+            <form method="post" action="{% if burger %}{% url 'admin_edit_burger' burger.pk %}{% else %}{% url 'admin_add_burger' %}{% endif %}" novalidate>
+                {% csrf_token %}
+
+                <div class="form-group">
+                    <label for="id_name">Name</label>
+                    {{ form.name }}
+                    {% if form.name.errors %}<div class="form-errors">{{ form.name.errors }}</div>{% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_description">Description</label>
+                    {{ form.description }}
+                    {% if form.description.errors %}<div class="form-errors">{{ form.description.errors }}</div>{% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_price">Price (₱)</label>
+                    {{ form.price }}
+                    {% if form.price.errors %}<div class="form-errors">{{ form.price.errors }}</div>{% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label for="id_image_url">Image URL</label>
+                    {{ form.image_url }}
+                    {% if form.image_url.errors %}<div class="form-errors">{{ form.image_url.errors }}</div>{% endif %}
+                </div>
+
+                <div class="form-group">
+                    <label>
+                        {{ form.is_available }}
+                        Available on menu
+                    </label>
+                    {% if form.is_available.errors %}<div class="form-errors">{{ form.is_available.errors }}</div>{% endif %}
+                </div>
+
+                <div style="display:flex;gap:.75rem;flex-wrap:wrap;margin-top:1rem;">
+                    <button type="submit" class="btn btn-primary">
+                        {% if burger %}Save Changes{% else %}Add Burger{% endif %}
+                    </button>
+                    <a href="{% url 'admin_panel' %}" class="btn btn-outline">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+{% endblock %}

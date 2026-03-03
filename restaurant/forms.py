@@ -1,7 +1,18 @@
 from django import forms
 from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.models import User
-from .models import Feedback, UserProfile
+from .models import Burger, Feedback, UserProfile
+
+
+class BurgerForm(forms.ModelForm):
+    """Form for adding/editing burgers in the admin panel."""
+    class Meta:
+        model = Burger
+        fields = ['name', 'description', 'price', 'image_url', 'is_available']
+        widgets = {
+            'description': forms.Textarea(attrs={'rows': 3}),
+            'image_url': forms.URLInput(attrs={'placeholder': 'https://example.com/burger.jpg'}),
+        }
 
 
 class RegistrationForm(UserCreationForm):

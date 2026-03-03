@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.contrib import messages
 
 from .models import Burger, Feedback, UserProfile, Order, OrderItem
-from .forms import RegistrationForm, SecureLoginForm, FeedbackForm, UserProfileForm
+from .forms import RegistrationForm, SecureLoginForm, FeedbackForm, UserProfileForm, BurgerForm
 
 
 # ---------------------------------------------------------------------------
@@ -159,11 +159,60 @@ def admin_panel_view(request):
     users = User.objects.select_related('profile').all()
     feedbacks = Feedback.objects.select_related('user').all()
     orders = Order.objects.select_related('user').prefetch_related('items__burger').all()
+    burgers = Burger.objects.all()
     return render(request, 'restaurant/admin_panel.html', {
         'users': users,
         'feedbacks': feedbacks,
         'orders': orders,
+        'burgers': burgers,
     })
+
+
+@login_required
+@user_passes_test(_is_staff)
+def admin_add_burger(request):
+    """Staff-only: add a new burger to the menu."""
+    if request.method == 'POST':
+        form = BurgerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Burger "{form.cleaned_data["name"]}" added to the menu!')
+            return redirect('admin_panel')
+        else:
+            messages.error(request, 'Please fix the errors below.')
+    else:
+        form = BurgerForm()
+    return render(request, 'restaurant/admin_burger_form.html', {'form': form, 'title': 'Add Burger'})
+
+
+@login_required
+@user_passes_test(_is_staff)
+def admin_edit_burger(request, pk):
+    """Staff-only: edit an existing burger."""
+    burger = get_object_or_404(Burger, pk=pk)
+    if request.method == 'POST':
+        form = BurgerForm(request.POST, instance=burger)
+        if form.is_valid():
+            form.save()
+            messages.success(request, f'Burger "{burger.name}" updated successfully!')
+            return redirect('admin_panel')
+        else:
+            messages.error(request, 'Please fix the errors below.')
+    else:
+        form = BurgerForm(instance=burger)
+    return render(request, 'restaurant/admin_burger_form.html', {'form': form, 'burger': burger, 'title': 'Edit Burger'})
+
+
+@login_required
+@user_passes_test(_is_staff)
+def admin_delete_burger(request, pk):
+    """Staff-only: delete a burger from the menu."""
+    if request.method == 'POST':
+        burger = get_object_or_404(Burger, pk=pk)
+        name = burger.name
+        burger.delete()
+        messages.success(request, f'Burger "{name}" has been deleted.')
+    return redirect('admin_panel')
 
 
 @user_passes_test(_is_staff)
